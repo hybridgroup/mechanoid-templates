@@ -1,18 +1,20 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"time"
 
 	"github.com/hybridgroup/mechanoid/engine"
 	"github.com/hybridgroup/mechanoid/interp/wasman"
+	"github.com/orsinium-labs/wypes"
 )
 
 //go:embed modules/ping.wasm
 var pingModule []byte
 
 func main() {
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 
 	println("Mechanoid engine starting...")
 	eng := engine.NewEngine()
@@ -23,16 +25,25 @@ func main() {
 	eng.UseInterpreter(intp)
 
 	println("Initializing engine...")
-	eng.Init()
+	err := eng.Init()
+	if err != nil {
+		println(err.Error())
+		return
+	}
 
 	println("Defining host function...")
-	if err := eng.Interpreter.DefineFunc("hosted", "pong", pongFunc); err != nil {
+	modules := wypes.Modules{
+		"hosted": wypes.Module{
+			"pong": wypes.H0(pongFunc),
+		},
+	}
+	if err := eng.Interpreter.SetModules(modules); err != nil {
 		println(err.Error())
 		return
 	}
 
 	println("Loading WASM module...")
-	if err := eng.Interpreter.Load(pingModule); err != nil {
+	if err := eng.Interpreter.Load(bytes.NewReader(pingModule)); err != nil {
 		println(err.Error())
 		return
 	}
@@ -46,12 +57,13 @@ func main() {
 
 	for {
 		println("Calling ping...")
-		ins.Call("ping")
+		_, _ = ins.Call("ping")
 
 		time.Sleep(1 * time.Second)
 	}
 }
 
-func pongFunc() {
+func pongFunc() wypes.Void {
 	println("pong")
+	return wypes.Void{}
 }
