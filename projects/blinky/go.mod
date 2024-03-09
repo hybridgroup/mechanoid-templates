@@ -2,6 +2,10 @@ module github.com/hybridgroup/mechanoid-templates/projects/blinky
 
 go 1.22.0
 
-require github.com/hybridgroup/mechanoid v0.0.0-20240223144719-a26235ac460c
+require github.com/hybridgroup/mechanoid v0.0.0-20240308193145-bb083b0e5117
 
-require github.com/hybridgroup/wasman v0.0.0-20240223122031-5eaa03843b74 // indirect
+require (
+	github.com/hybridgroup/wasman v0.0.0-20240304140329-ce1ea6b61834 // indirect
+	github.com/orsinium-labs/wypes v0.1.4 // indirect
+	github.com/tetratelabs/wazero v1.6.0 // indirect
+)

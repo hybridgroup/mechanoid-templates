@@ -1,44 +1,51 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"time"
 
 	"github.com/aykevl/board"
 	"github.com/hybridgroup/mechanoid/engine"
-	"github.com/hybridgroup/mechanoid/interp/wasman"
+	"github.com/hybridgroup/mechanoid/interp"
+	"tinygo.org/x/drivers/pixel"
+
+	"github.com/hybridgroup/mechanoid-templates/projects/display/devices/display"
 )
 
 //go:embed modules/ping.wasm
-var pingModule []byte
+var wasmModule []byte
 
 var (
+	eng *engine.Engine
+
 	pingCount, pongCount int
 )
 
+// main func just calls a run() func so we can infer the display type.
 func main() {
-	display := NewDisplayDevice(board.Display.Configure())
+	run(board.Display.Configure())
+}
 
-	println("TinyWASM engine starting...")
-	eng := engine.NewEngine()
+// run func is the main entry point for the program.
+func run[T pixel.Color](disp board.Displayer[T]) {
+	time.Sleep(1 * time.Second)
 
-	println("Using interpreter...")
-	eng.UseInterpreter(&wasman.Interpreter{})
+	println("Mechanoid engine starting...")
+	eng = engine.NewEngine()
+
+	println("Adding display device...")
+	eng.AddDevice(display.NewDevice(disp))
+
+	intp := interp.NewInterpreter()
+	println("Using interpreter", intp.Name())
+	eng.UseInterpreter(intp)
 
 	println("Initializing engine...")
 	eng.Init()
 
-	if err := eng.Interpreter.DefineFunc("hosted", "pong", func() {
-		pongCount++
-		println("pong", pongCount)
-		display.Pong(pongCount)
-	}); err != nil {
-		println(err.Error())
-		return
-	}
-
-	println("Loading module...")
-	if err := eng.Interpreter.Load(pingModule); err != nil {
+	println("Loading WASM module...")
+	if err := eng.Interpreter.Load(bytes.NewReader(wasmModule)); err != nil {
 		println(err.Error())
 		return
 	}
@@ -51,10 +58,14 @@ func main() {
 	}
 
 	for {
-		println("Ping", pingCount)
-		ins.Call("ping")
 		pingCount++
-		display.Ping(pingCount)
+		println("Ping", pingCount)
+
+		if _, err := ins.Call("ping"); err != nil {
+			println(err.Error())
+		}
+
+		eng.Devices[0].(*display.Device[T]).ShowPing(pingCount)
 
 		time.Sleep(1 * time.Second)
 	}

@@ -3,7 +3,7 @@ module github.com/hybridgroup/mechanoid-templates/projects/simple
 go 1.22.0
 
 require (
-	github.com/hybridgroup/mechanoid v0.0.0-20240308111911-97652132727d
+	github.com/hybridgroup/mechanoid v0.0.0-20240308193145-bb083b0e5117
 	github.com/orsinium-labs/wypes v0.1.4
 )
 

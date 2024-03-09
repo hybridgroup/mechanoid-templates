@@ -1,5 +1,6 @@
 # Blink
 
-Mechanoid WebAssembly module template.
+Mechanoid WebAssembly Blink module template.
 
+## Building
 

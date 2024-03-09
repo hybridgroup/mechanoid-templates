@@ -5,7 +5,8 @@ import (
 	"time"
 
 	"github.com/hybridgroup/mechanoid/engine"
-	"github.com/hybridgroup/mechanoid/interp/wasman"
+	"github.com/hybridgroup/mechanoid/interp"
+	"github.com/orsinium-labs/wypes"
 )
 
 var (
@@ -13,46 +14,48 @@ var (
 )
 
 func main() {
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 
-	println("TinyWASM engine starting...")
+	println("Mechanoid engine starting...")
 	eng = engine.NewEngine()
 
-	println("Using interpreter...")
-	eng.UseInterpreter(&wasman.Interpreter{
-		Memory: make([]byte, 65536),
-	})
+	intp := interp.NewInterpreter()
+	println("Using interpreter", intp.Name())
+	eng.UseInterpreter(intp)
 
 	println("Use file store...")
 	eng.UseFileStore(fs)
 
 	println("Initializing engine...")
-	eng.Init()
-
-	if err := eng.Interpreter.DefineFunc("hosted", "pong", pongFunc); err != nil {
+	err := eng.Init()
+	if err != nil {
 		println(err.Error())
 		return
 	}
 
-	if err := eng.Interpreter.DefineFunc("env", "hola", holaFunc); err != nil {
+	modules := wypes.Modules{
+		"hosted": wypes.Module{
+			"pong": wypes.H0(pongFunc),
+		},
+		"env": wypes.Module{
+			"hola": wypes.H1(holaFunc),
+		},
+	}
+	if err := eng.Interpreter.SetModules(modules); err != nil {
 		println(err.Error())
 		return
 	}
-
 	// start up CLI
 	cli()
 }
 
-func pongFunc() {
+func pongFunc() wypes.Void {
 	println("pong")
+	return wypes.Void{}
 }
 
-func holaFunc(ptr uint32, size uint32) uint32 {
-	msg, err := eng.Interpreter.MemoryData(ptr, size)
-	if err != nil {
-		println(err.Error())
-		return 0
-	}
-	println(string(msg))
-	return size
+func holaFunc(msg wypes.String) wypes.Void {
+	println(msg.Unwrap())
+
+	return wypes.Void{}
 }

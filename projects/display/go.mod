@@ -5,7 +5,8 @@ go 1.22.0
 require (
 	github.com/aykevl/board v0.0.0-20240106144210-80ca76f77def
 	github.com/aykevl/tinygl v0.0.0-20240131130748-3033a2fd9182
-	github.com/hybridgroup/mechanoid v0.0.0-20240223144719-a26235ac460c
+	github.com/hybridgroup/mechanoid v0.0.0-20240308193145-bb083b0e5117
+	github.com/orsinium-labs/wypes v0.1.4
 	tinygo.org/x/drivers v0.26.1-0.20231124130000-fef6564044f9
 )
 
@@ -25,12 +26,13 @@ require (
 	github.com/goki/freetype v0.0.0-20220119013949-7a161fd3728c // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
-	github.com/hybridgroup/wasman v0.0.0-20240223122031-5eaa03843b74 // indirect
+	github.com/hybridgroup/wasman v0.0.0-20240304140329-ce1ea6b61834 // indirect
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/srwiley/oksvg v0.0.0-20220731023508-a61f04f16b76 // indirect
 	github.com/srwiley/rasterx v0.0.0-20210519020934-456a8d69b780 // indirect
 	github.com/stretchr/testify v1.8.0 // indirect
+	github.com/tetratelabs/wazero v1.6.0 // indirect
 	github.com/tevino/abool v1.2.0 // indirect
 	github.com/yuin/goldmark v1.4.13 // indirect
 	golang.org/x/image v0.3.0 // indirect
